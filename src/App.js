@@ -15,7 +15,23 @@ const particlesOptions = {
         enable: true,
         value_area: 150
       }
-    }
+    },
+    size: {
+      "value": 5,
+      "random": true,
+      "anim": {
+        "enable": true,
+        "speed": 80,
+        "size_min": 1000,
+        "sync": false
+      }
+    },
+    "line_linked": {
+      "enable": true,
+      "distance": 155,
+      "opacity": 0.4,
+      "width": 2
+    },
   }
 }
 
