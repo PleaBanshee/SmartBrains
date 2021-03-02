@@ -10,3 +10,24 @@
     background-size: 40px 60px;
 }
 
+input {
+    outline: none;
+    border: black;
+    margin-left: -200px;
+}
+
+.grow-btn {
+    transition: all 1s ease-in-out;
+}
+  
+.grow-btn:hover,
+.grow-btn:focus {
+    transform: scale(1.1);
+    background-color: #FF5EDF;
+}
+
+.border {
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+    /* border-style: outset; */
+}
