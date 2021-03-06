@@ -46,8 +46,26 @@ class App extends Component {
     super();
     this.state = {
       input: '',
-      imageURL: ''
+      imageURL: '',
+      box: {}
     }
+  }
+
+  calcFaceBox = (data) => {
+    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
+    const img = document.getElementById("inputimage");
+    const width = Number(img.width);
+    const height = Number(img.height);
+    return {
+      topRow: clarifaiFace.top_row * height, // top column percentage × height
+      leftCol: clarifaiFace.left_col * width, // left column percentage × width
+      rightCol: width - (clarifaiFace.right_col * width), // percentage of right column × width, subtracted from image width
+      bottomRow: height - (clarifaiFace.bottom_row * height) // percentage of bottom row × height, subtracted from image height, because the calculations start from the top
+    }
+  }
+
+  displayBox = (box) => {
+    this.setState({box: box});
   }
 
   // invoked when value in input box changes
@@ -55,17 +73,17 @@ class App extends Component {
     this.setState({input: event.target.value})
   }
 
+  // Calling setState() in React is asynchronous, for various reasons (mainly performance). 
+  // Under the covers React will batch multiple calls to setState() into a single call, and then re-render the component a single time, 
+  // rather than re-rendering for every state change. Therefore the imageUrl parameter would have never worked in this app, 
+  // because when we called Clarifai with our the predict function, React wasn't finished updating the state. 
+
   onButtonSubmit = () => {
     this.setState({imageURL: this.state.input})
     app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-    .then(
-      function(response) {
-        console.log(response.outputs[0].data.regions[0].region_info.bounding_box)
-      },
-      function (err) {
-        console.log(err)
-      }
-    )};
+    .then(response =>  this.displayBox(this.calcFaceBox(response)))
+    .catch(err => console.log(err));
+  }
 
   render() {
     return (
@@ -76,7 +94,7 @@ class App extends Component {
         <Logo/>
         <Rank/>
         <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
-        <FaceRecognition imageURL={this.state.imageURL}/>
+        <FaceRecognition box={this.state.box} imageURL={this.state.imageURL}/>
       </div>
     );
   }
