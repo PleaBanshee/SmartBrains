@@ -1,19 +1,14 @@
 import React, { Component } from 'react';
 import './App.css';
-import SignIn from './components/signin/SignIn.js';
-import Register from './components/register/Register.js';
+import SignIn from './containers/signin/SignIn.js';
+import Register from './containers/register/Register.js';
 import Navigation from './components/navigation/Navigation.js';
 import Logo from './components/logo/Logo.js';
 import ImageLinkForm from './components/imagelinkform/ImageLinkForm.js';
 import Rank from './components/rank/Rank.js'
 import Particles from 'react-particles-js';
 import FaceRecognition from './components/facerecognition/FaceRecognition.js';
-import Clarifai from 'clarifai';
 import 'tachyons';
-
-const app = new Clarifai.App({
-  apiKey: '207fdd68775946a1b22ed5c6221c1bcd'
- });
 
 const particlesOptions = {
   particles: {
@@ -43,24 +38,26 @@ const particlesOptions = {
   }
 }
 
+// state when user logs in
+const initialState = {
+  input: '',
+  imageURL: '',
+  box: {},
+  route: 'signIn',
+  isSignedIn: false,
+  userProfile: {
+      id: '',
+      name: '',
+      email: '',
+      password: '',
+      entries: 0,
+      joined: ''
+  }
+}
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      input: '',
-      imageURL: '',
-      box: {},
-      route: 'signIn', // keeps track where you are on the app
-      isSignedIn: false,
-      userProfile: {
-          id: '',
-          name: '',
-          email: '',
-          password: '',
-          entries: 0,
-          joined: ''
-      }
-    }
+    this.state = initialState;
   }
 
   calcFaceBox = (data) => {
@@ -92,7 +89,14 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({imageURL: this.state.input})
-    app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+    fetch('http://localhost:3001/imageurl', { // fetch the API call from the server
+      method: 'post',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+          input: this.state.input
+      })
+    })
+    .then(response => response.json())
     .then(response =>  {
         if (response) {
             fetch('http://localhost:3001/Image', {
@@ -106,20 +110,21 @@ class App extends Component {
               .then(count => {
                   //  copies all enumerable own properties from one or more source objects to a target object
                   this.setState(Object.assign(this.state.userProfile, {entries: count}));
-              })       
+              })
+              .catch(console.log());      
         }
         this.displayBox(this.calcFaceBox(response))
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log);
   }
 
   onRouteChange = (route) => {
     if (route === 'signOut') {
-      this.setState({isSignedIn: false})
+      this.setState(initialState);
     } else if (route === 'Home') {
-      this.setState({isSignedIn: true})
+      this.setState({isSignedIn: true});
     }
-    this.setState({route: route})
+    this.setState({route: route});
   }
 
   loadUser = (data) => {
