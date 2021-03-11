@@ -58,7 +58,7 @@ class App extends Component {
           email: '',
           password: '',
           entries: 0,
-          joined: null
+          joined: ''
       }
     }
   }
@@ -104,6 +104,7 @@ class App extends Component {
               })
               .then(response => response.json())
               .then(count => {
+                  //  copies all enumerable own properties from one or more source objects to a target object
                   this.setState(Object.assign(this.state.userProfile, {entries: count}));
               })       
         }
