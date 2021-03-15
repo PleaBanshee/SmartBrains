@@ -12,7 +12,7 @@ const ImageLinkForm = ({onInputChange, onButtonSubmit}) => {
                 <div className="form center pa4 br3 shadow-3">
                     {/* onChange fires when values in input element changes */}
                     <input className="f4 pa2 w-70 center ba bw2" type="text" onChange={onInputChange}></input>
-                    <button className="w-30 grow-btn f4 border ph3 pv2 dib white bg-light-purple ml3"
+                    <button className="w-auto w-30-ns grow-btn f4 border ph3 pv2 dib white bg-light-purple ml3"
                         onClick={onButtonSubmit} // Fires when clicking on button
                     >Detect</button>
                 </div>
