@@ -77,7 +77,7 @@ class App extends Component {
   }
 
   displayBox = (boxes) => {
-    this.setState({box: boxes});
+    this.setState({boxes: boxes});
   }
 
   // invoked when value in input box changes
