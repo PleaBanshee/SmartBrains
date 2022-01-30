@@ -42,7 +42,7 @@ const particlesOptions = {
 const initialState = {
   input: '',
   imageURL: '',
-  box: {},
+  boxes: [], // receives an array of faces to detect
   route: 'signIn',
   isSignedIn: false,
   userProfile: {
@@ -61,20 +61,23 @@ class App extends Component {
   }
 
   calcFaceBox = (data) => {
-    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
     const img = document.getElementById("inputimage");
     const width = Number(img.width);
     const height = Number(img.height);
-    return {
-      topRow: clarifaiFace.top_row * height, // top column percentage × height
-      leftCol: clarifaiFace.left_col * width, // left column percentage × width
-      rightCol: width - (clarifaiFace.right_col * width), // percentage of right column × width, subtracted from image width
-      bottomRow: height - (clarifaiFace.bottom_row * height) // percentage of bottom row × height, subtracted from image height, because the calculations start from the top
-    }
+    // data.regions determine the positions of faces
+    return data.outputs[0].data.regions.map((face) => {
+        const clarifaiFace = face.region_info.bounding_box;
+        return {
+          topRow: clarifaiFace.top_row * height, // top column percentage × height
+          leftCol: clarifaiFace.left_col * width, // left column percentage × width
+          rightCol: width - (clarifaiFace.right_col * width), // percentage of right column × width, subtracted from image width
+          bottomRow: height - (clarifaiFace.bottom_row * height) // percentage of bottom row × height, subtracted from image height, because the calculations start from the top
+        }
+    });
   }
 
-  displayBox = (box) => {
-    this.setState({box: box});
+  displayBox = (boxes) => {
+    this.setState({box: boxes});
   }
 
   // invoked when value in input box changes
@@ -139,7 +142,7 @@ class App extends Component {
   }
 
   render() {
-    const { isSignedIn, imageURL, route, box } = this.state; // Destructuring
+    const { isSignedIn, imageURL, route, boxes } = this.state; // Destructuring
     return (
       <div className="App">
         <Particles className="particles" params={particlesOptions} />
@@ -149,7 +152,7 @@ class App extends Component {
             <Logo/>
             <Rank name={this.state.userProfile.name} entries={this.state.userProfile.entries}/>
             <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit}/>
-            <FaceRecognition box={box} imageURL={imageURL}/>
+            <FaceRecognition boxes={boxes} imageURL={imageURL}/>
           </div> : (
             route === 'signIn' ?
             <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}/> :
