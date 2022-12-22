@@ -21,7 +21,7 @@ class SignIn extends Component {
 
     // Event on sign In button
     onSubmitSignIn = () => {
-        fetch('https://smartbrains-server.onrender.com./signIn', { // fetch implements by default the GET method
+        fetch('https://smartbrains-server.onrender.com/signIn', { // fetch implements by default the GET method
             method: 'post',
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({ // send JSON object back as string to server
