@@ -92,7 +92,7 @@ class App extends Component {
 
   onButtonSubmit = () => {
     this.setState({imageURL: this.state.input})
-    fetch('https://pacific-woodland-59794.herokuapp.com/imageurl', { // fetch the API call from the server
+    fetch('https://smartbrains-server.onrender.com./imageurl', { // fetch the API call from the server
       method: 'post',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
@@ -102,7 +102,7 @@ class App extends Component {
     .then(response => response.json())
     .then(response =>  {
         if (response) {
-            fetch('https://pacific-woodland-59794.herokuapp.com/Image', {
+            fetch('https://smartbrains-server.onrender.com./Image', {
                 method: 'put',
                 headers: {'Content-Type':'application/json'},
                 body: JSON.stringify({
